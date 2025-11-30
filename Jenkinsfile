@@ -34,6 +34,14 @@ pipeline {
             }
         }
 
+        stage('Debug Workspace') {
+            steps {
+                sh "ls -l ${env.WORKSPACE}"
+                sh "pwd"
+            }
+        }
+
+
         stage('SonarQube Analysis') {
             steps {
                 sh """
