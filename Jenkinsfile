@@ -5,10 +5,10 @@ pipeline {
         IMAGE_NAME = "simple-app"
         IMAGE_TAG = "1.0"
 
-        // Direct Sonar URL → NO global Jenkins config needed
-        SONAR_HOST_URL = "http://3.110.48.47/:9000"
+        // Correct SonarQube URL
+        SONAR_HOST_URL = "http://3.110.48.47:9000"
 
-        // Sonar token stored in Jenkins credentials
+        // Jenkins credential ID
         SONAR_TOKEN = credentials('sonar-token')
     }
 
@@ -22,7 +22,13 @@ pipeline {
 
         stage('Maven Build') {
             steps {
-                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean verify -DskipTests'
+                sh '''
+                    docker run --rm \
+                        -v "$PWD":/app \
+                        -w /app \
+                        maven:3.9.6-eclipse-temurin-17 \
+                        mvn clean verify -DskipTests
+                '''
             }
         }
 
@@ -30,7 +36,7 @@ pipeline {
             steps {
                 sh """
                     docker run --rm \
-                        -v $PWD:/app \
+                        -v "$PWD":/app \
                         -w /app \
                         maven:3.9.6-eclipse-temurin-17 \
                         mvn sonar:sonar \
@@ -59,6 +65,8 @@ pipeline {
     }
 
     post {
-        always { cleanWs() }
+        always {
+            cleanWs()
+        }
     }
 }
