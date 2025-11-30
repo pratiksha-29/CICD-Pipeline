@@ -39,17 +39,12 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-            }
-        }
-
-        stage('Deploy') {
+       stage('Docker Build & Deploy') {
             steps {
                 sh """
-                    docker rm -f ${IMAGE_NAME} || true
-                    docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${IMAGE_NAME}:${IMAGE_TAG}
+                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${env.WORKSPACE}
+                docker rm -f ${IMAGE_NAME} || true
+                docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${IMAGE_NAME}:${IMAGE_TAG}
                 """
             }
         }
