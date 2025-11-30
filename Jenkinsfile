@@ -33,7 +33,8 @@ pipeline {
                 // Run Maven inside Docker, workspace root contains pom.xml
                 sh """
                 docker run --rm \
-                    -v ${env.WORKSPACE}:/app \
+                    -u root \
+                    -v /var/jenkins_home/workspace/Maven:/app \
                     -w /app \
                     maven:3.9.6-eclipse-temurin-17 \
                     mvn clean verify -DskipTests
