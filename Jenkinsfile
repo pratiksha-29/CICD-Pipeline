@@ -22,13 +22,19 @@ pipeline {
 
         stage('Maven Build') {
             steps {
-                sh '''
+                script {
+                    // Path where pom.xml exists relative to workspace
+                    def projectDir = ''  // e.g., '' if at root, or 'project' if in a subfolder
+
+                    // Run Maven in Docker
+                    sh """
                     docker run --rm \
-                        -v "$PWD":/app \
-                        -w /app \
+                        -v ${env.WORKSPACE}:/app \
+                        -w /app/${projectDir} \
                         maven:3.9.6-eclipse-temurin-17 \
                         mvn clean verify -DskipTests
-                '''
+                    """
+                }
             }
         }
 
