@@ -20,6 +20,13 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/pratiksha-29/CICD-Pipeline/'
             }
         }
+         stage('Debug Workspace') {
+            steps {
+                sh "ls -l ${env.WORKSPACE}"
+                sh "pwd"
+            }
+        }
+
 
         stage('Maven Build') {
             steps {
@@ -34,13 +41,7 @@ pipeline {
             }
         }
 
-        stage('Debug Workspace') {
-            steps {
-                sh "ls -l ${env.WORKSPACE}"
-                sh "pwd"
-            }
-        }
-
+       
 
         stage('SonarQube Analysis') {
             steps {
