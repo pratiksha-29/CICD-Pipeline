@@ -1,5 +1,10 @@
 pipeline {
-    agent none  // No global agent
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+            args '-v /var/jenkins_home/.m2:/root/.m2' // cache Maven dependencies
+        }
+    }
 
     environment {
         IMAGE_NAME = "simple-app"
@@ -9,27 +14,20 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
-            agent any  // Checkout on Jenkins host
             steps {
                 git branch: 'main', url: 'https://github.com/pratiksha-29/CICD-Pipeline/'
             }
         }
 
         stage('Maven Build') {
-            agent {
-                docker {
-                    image 'maven:3.9.6-eclipse-temurin-17'
-                    args '-v /var/jenkins_home/.m2:/root/.m2'
-                }
-            }
             steps {
                 sh 'mvn clean verify -DskipTests'
             }
         }
 
         stage('SonarQube Analysis') {
-            agent any  // Run on host
             steps {
                 sh """
                 mvn sonar:sonar \
@@ -41,13 +39,17 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Deploy') {
-            agent any  // Run on Jenkins host/container with Docker
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+            }
+        }
+
+        stage('Deploy') {
             steps {
                 sh """
-                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${env.WORKSPACE}
-                docker rm -f ${IMAGE_NAME} || true
-                docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${IMAGE_NAME}:${IMAGE_TAG}
+                    docker rm -f ${IMAGE_NAME} || true
+                    docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${IMAGE_NAME}:${IMAGE_TAG}
                 """
             }
         }
