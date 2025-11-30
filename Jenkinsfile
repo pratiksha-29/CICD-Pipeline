@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'docker-agent' } // runs on agent with Docker installed
+    agent any
 
     environment {
         IMAGE_NAME = "simple-app"
@@ -12,13 +12,14 @@ pipeline {
 
         stage('Checkout') {
             steps {
+                echo "Checking out source code"
                 git branch: 'main', url: 'https://github.com/pratiksha-29/CICD-Pipeline/'
             }
         }
 
         stage('Maven Build') {
             steps {
-                // Use Maven Docker container manually
+                echo "Running Maven inside Docker"
                 sh """
                 docker run --rm \
                     -v ${env.WORKSPACE}:/app \
@@ -31,6 +32,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                echo "Running SonarQube analysis inside Docker"
                 sh """
                 docker run --rm \
                     -v ${env.WORKSPACE}:/app \
@@ -47,6 +49,7 @@ pipeline {
 
         stage('Docker Build & Deploy') {
             steps {
+                echo "Building and running Docker image"
                 sh """
                 docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${env.WORKSPACE}
                 docker rm -f ${IMAGE_NAME} || true
@@ -58,6 +61,7 @@ pipeline {
 
     post {
         always {
+            echo "Cleaning workspace"
             cleanWs()
         }
     }
