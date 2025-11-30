@@ -29,36 +29,24 @@ pipeline {
 
 
         stage('Maven Build') {
-            steps {
-                // Run Maven inside Docker, workspace root contains pom.xml
-                sh """
-                docker run --rm \
-                    -u root \
-                    -v /var/jenkins_home/workspace/Maven:/app \
-                    -w /app \
-                    maven:3.9.6-eclipse-temurin-17 \
-                    mvn clean verify -DskipTests
-                """
-            }
-        }
+    steps {
+        sh "mvn clean verify -DskipTests"
+    }
+}
 
        
 
-        stage('SonarQube Analysis') {
-            steps {
-                sh """
-                docker run --rm \
-                    -v ${env.WORKSPACE}:/app \
-                    -w /app \
-                    maven:3.9.6-eclipse-temurin-17 \
-                    mvn sonar:sonar \
-                    -Dsonar.projectKey=simple-app \
-                    -Dsonar.projectName=simple-app \
-                    -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_TOKEN
-                """
-            }
-        }
+       stage('SonarQube Analysis') {
+    steps {
+        sh """
+        mvn sonar:sonar \
+            -Dsonar.projectKey=simple-app \
+            -Dsonar.projectName=simple-app \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
+        """
+    }
+}
 
         stage('Docker Build') {
             steps {
