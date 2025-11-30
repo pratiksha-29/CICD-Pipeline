@@ -27,7 +27,7 @@ pipeline {
         stage('Maven Build') {
             steps {
                 echo "2️⃣ Building Java project using Maven"
-                sh 'mvn clean verify -DskipTests'
+                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean verify -DskipTests'
             }
         }
 
