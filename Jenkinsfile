@@ -65,7 +65,7 @@ pipeline {
             steps {
                 sh """
                     docker rm -f ${IMAGE_NAME} || true
-                    docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${IMAGE_NAME}:${IMAGE_TAG}
+                    docker run -d --name ${IMAGE_NAME} -p 9096:8080 ${IMAGE_NAME}:${IMAGE_TAG}
                 """
             }
         }
