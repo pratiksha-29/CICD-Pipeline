@@ -39,20 +39,18 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                sh """
-                echo "Listing workspace:"
-                ls -l
-                echo "Current directory: $(pwd)"
-                
-                echo "Docker version:"
-                docker --version
+       stage('Docker Build') {
+    steps {
+        sh """
+        echo "Listing workspace:"
+        ls -l
+        echo "Current directory: \$(pwd)"
 
-                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${WORKSPACE}
-                """
-            }
-        }
+        docker --version
+        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${WORKSPACE}
+        """
+    }
+}
         stage('Deploy') {
             steps {
                 sh """
