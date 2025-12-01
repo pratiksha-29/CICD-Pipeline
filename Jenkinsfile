@@ -9,7 +9,7 @@ pipeline {
     environment {
         IMAGE_NAME = "simple-app"
         IMAGE_TAG = "1.0"
-        SONAR_HOST_URL = "http://3.110.48.47:9000"
+        SONAR_HOST_URL = "http://13.127.117.57:9000"
         SONAR_TOKEN = credentials('sonar-token')
     }
 
