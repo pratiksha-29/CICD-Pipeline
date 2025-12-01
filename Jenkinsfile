@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'trion/maven-docker:latest'
+            image 'maven:3.9.6-eclipse-temurin-17'
             args '-v /var/run/docker.sock:/var/run/docker.sock -v ${WORKSPACE}:/app -w /app'
         }
     }
@@ -18,6 +18,16 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pratiksha-29/CICD-Pipeline/'
+            }
+        }
+
+         stage('Install Docker CLI') {
+            steps {
+                sh """
+                apt-get update
+                apt-get install -y docker.io
+                docker --version
+                """
             }
         }
 
