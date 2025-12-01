@@ -41,10 +41,18 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh """
+                echo "Listing workspace:"
+                ls -l
+                echo "Current directory: $(pwd)"
+                
+                echo "Docker version:"
+                docker --version
+
+                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${WORKSPACE}
+                """
             }
         }
-
         stage('Deploy') {
             steps {
                 sh """
@@ -55,9 +63,5 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            cleanWs()
-        }
-    }
+    
 }
